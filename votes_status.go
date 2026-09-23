@@ -86,6 +86,7 @@ func PrintEpochVoteStatus(cProps *ConnectionProps) error {
 			candidates = append(candidates, v.Candidate)
 		}
 	}
+
 	sort.Slice(candidates, func(i, j int) bool { return tally[candidates[i]] > tally[candidates[j]] })
 
 	log.Printf("  Candidate tallies:")
@@ -162,6 +163,11 @@ func gatherEpochVotes(cProps *ConnectionProps, startBlock *big.Int, head uint64)
 			voter, ok := resolveSender(evt.Raw.TxHash)
 			if !ok {
 				continue
+			}
+
+			if !seen[voter] {
+				seen[voter] = true
+				order = append(order, voter)
 			}
 
 			if evt.Arg2 == resetVoteData {
